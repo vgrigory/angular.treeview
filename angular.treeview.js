@@ -29,7 +29,8 @@
 (function ( angular ) {
 	'use strict';
 
-	angular.module( 'angularTreeview', [] ).directive( 'treeModel', ['$compile', function( $compile ) {
+	angular.module( 'angularTreeview', [] )
+		.directive( 'treeModel', ['$compile', function( $compile ) {
 		return {
 			restrict: 'A',
 			link: function ( scope, element, attrs ) {
@@ -49,10 +50,14 @@
 				//children
 				var nodeChildren = attrs.nodeChildren || 'children';
 
+				//filter
+				var nodeFilter =attrs.nodeFilter || '';
+				var filter = nodeFilter!=='' ? ' | nodefilter: ' + nodeFilter : '';
+
 				//tree template
 				var template =
 					'<ul>' +
-						'<li data-ng-repeat="node in ' + treeModel + '">' +
+						'<li data-ng-repeat="node in ' + treeModel + filter + '">' +
 							'<i class="collapsed" data-ng-show="node.' + nodeChildren + '.length && node.collapsed" data-ng-click="' + treeId + '.selectNodeHead(node)"></i>' +
 							'<i class="expanded" data-ng-show="node.' + nodeChildren + '.length && !node.collapsed" data-ng-click="' + treeId + '.selectNodeHead(node)"></i>' +
 							'<i class="normal" data-ng-hide="node.' + nodeChildren + '.length"></i> ' +
@@ -68,7 +73,7 @@
 					//root node
 					if( attrs.angularTreeview ) {
 					
-						//create tree object if not exists
+						//create/link tree object if not exists
 						var treeObject = scope;
 						if (treeId) {
 							treeObject = scope[treeId] = scope[treeId] || {};
@@ -102,5 +107,15 @@
 				}
 			}
 		};
-	}]);
+	}])
+		.filter('nodefilter', ['$filter', function($filter){
+			var stdFilter = $filter('filter');
+			return function(input, nodefilter){
+				var res = stdFilter(input, nodefilter);
+				if (!!nodefilter && res.length > 0) {
+					angular.forEach(res, function(item){item.collapsed = false;});
+				}
+				return res;
+			}
+		}]);
 })( angular );
