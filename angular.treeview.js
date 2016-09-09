@@ -38,7 +38,7 @@
 			link: function ( scope, element, attrs ) {
 				//tree id
 				var treeId = attrs.treeId;
-				var treeIdPrefix = treeId ? treeId+'.' : '';
+				var treeIdPrefix = treeId ? treeId + '.' : '';
 			
 				//tree model
 				var treeModel = attrs.treeModel;
@@ -60,11 +60,11 @@
 				var template =
 					'<ul>' +
 						'<li data-ng-repeat="node in ' + treeModel + filter + '">' +
-							'<i class="collapsed" data-ng-show="node.' + nodeChildren + '.length && node.collapsed" data-ng-click="' + treeId + '.selectNodeHead(node)"></i>' +
-							'<i class="expanded" data-ng-show="node.' + nodeChildren + '.length && !node.collapsed" data-ng-click="' + treeId + '.selectNodeHead(node)"></i>' +
+							'<i class="collapsed" data-ng-show="node.' + nodeChildren + '.length && node.collapsed" data-ng-click="' + treeIdPrefix + 'selectNodeHead(node)"></i>' +
+							'<i class="expanded" data-ng-show="node.' + nodeChildren + '.length && !node.collapsed" data-ng-click="' + treeIdPrefix + 'selectNodeHead(node)"></i>' +
 							'<i class="normal" data-ng-hide="node.' + nodeChildren + '.length"></i> ' +
 							'<span data-ng-class="node.selected" data-ng-click="' + treeIdPrefix + 'selectNodeLabel(node)">{{node.' + nodeLabel + '}}</span>' +
-							'<div data-ng-hide="node.collapsed" data-tree-id="' + treeId + '" data-tree-model="node.' + nodeChildren + '" data-node-id=' + nodeId + ' data-node-label=' + nodeLabel + ' data-node-children=' + nodeChildren + '></div>' +
+							'<div data-ng-hide="node.collapsed" ' + (treeId ? 'data-tree-id="' + treeId + '"' : '') + ' data-tree-model="node.' + nodeChildren + '" data-node-id=' + nodeId + ' data-node-label=' + nodeLabel + ' data-node-children=' + nodeChildren + '></div>' +
 						'</li>' +
 					'</ul>';
 
