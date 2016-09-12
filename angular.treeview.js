@@ -88,6 +88,9 @@
 
 						//if node label clicks,
 						treeObject.selectNodeLabel = treeObject.selectNodeLabel || function( selectedNode ){
+							if (selectedNode.isFolder) {
+								return treeObject.selectNodeHead(selectedNode);
+							}
 
 							//remove highlight from previous node
 							if( treeObject.currentNode && treeObject.currentNode.selected ) {
