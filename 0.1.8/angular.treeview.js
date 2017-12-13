@@ -111,7 +111,7 @@
                                 }
                             }
 
-                            return (node[isFolder] || node[nodeChildren].length) && !emptyFolder;
+                            return (node[isFolder] || nodeChildrenLength) && !emptyFolder;
                         }
 
 						//if node head clicks,
