@@ -69,21 +69,18 @@
 				//isfolder
 				var isFolder = attrs.nodeIsfolder || 'isfolder';
 
-				//hideDisabledNodes - by default it is true
-// 				var hideDisabledNodes = !attrs.hideDisabledNodes ? true : attrs.hideDisabledNodes === 'true';
-
 				//filter
 
 				var nodeFilter =attrs.nodeFilter || '';
-				var filter = nodeFilter!=='' ? ' | filter: ' + nodeFilter : '';
+				var filter = nodeFilter!=='' ? ' | filter:searchTree(this)' : '';
 				var highlight_filter = nodeFilter!=='' ? ' | nodehighlight: ' + nodeFilter : '';
 				//tree template
 				var template =
 					'<ul>' +
 						'<li ng-hide="node.disabled" data-ng-repeat="node in ' + treeModel + filter + '">' +
-							'<a href="" class="nodewrap" ng-class="{activenode: node.'+ nodeId + ' == ' + treeIdPrefix + 'currentNode.' + nodeId +' && !!node.'+ nodeId + ', disablednode: node.disabled}"><i class="collapsed" data-ng-show="(node.'+isFolder+' || node.' + nodeChildren + '.length) && node.collapsed" data-ng-click="' + treeIdPrefix + 'selectNodeHead(node)"></i>' +
-							'<i class="expanded" data-ng-show="(node.'+isFolder+' || node.' + nodeChildren + '.length) && !node.collapsed" data-ng-click="' + treeIdPrefix + 'selectNodeHead(node)"></i>' +
-							'<i class="normal" data-ng-hide="node.'+isFolder+' || node.' + nodeChildren + '.length"></i> ' +
+							'<a href="" class="nodewrap" ng-class="{activenode: node.'+ nodeId + ' == ' + treeIdPrefix + 'currentNode.' + nodeId +' && !!node.'+ nodeId + ', disablednode: node.disabled}"><i class="collapsed" data-ng-show="' + treeIdPrefix + 'shouldRenderAsFolder(node) && node.collapsed" data-ng-click="' + treeIdPrefix + 'selectNodeHead(node)"></i>' +
+							'<i class="expanded" data-ng-show="' + treeIdPrefix + 'shouldRenderAsFolder(node) && !node.collapsed" data-ng-click="' + treeIdPrefix + 'selectNodeHead(node)"></i>' +
+							'<i class="normal" data-ng-hide="' + treeIdPrefix + 'shouldRenderAsFolder(node)"></i> ' +
 							'<span class="node_title" data-ng-click="' + treeIdPrefix + 'selectNodeLabel(node)" ng-bind-html="node.' + nodeLabel + highlight_filter+'"></span></a>' +
 							'<div ng-if="!node.collapsed" data-ng-hide="node.collapsed" ' + (treeId ? 'data-tree-id="' + treeId + '"' : '') + ' data-tree-model="node.' + nodeChildren + '" data-node-id=' + nodeId + ' data-node-label=' + nodeLabel + ' data-node-children=' + nodeChildren + ' data-node-filter="'+ nodeFilter +'"></div>' +
 						'</li>' +
@@ -101,6 +98,21 @@
 						if (treeId) {
 							treeObject = scope[treeId] = scope[treeId] || {};
 						}
+
+                        treeObject.shouldRenderAsFolder = function (node) {
+                            var i;
+                            var nodeChildrenLength = node[nodeChildren] ? node[nodeChildren].length : 0;
+                            var emptyFolder = true;
+
+                            for (i = 0; i < nodeChildrenLength; i++) {
+                                if (!node[nodeChildren][i].disabled) {
+                                    emptyFolder = false;
+                                    break;
+                                }
+                            }
+
+                            return (node[isFolder] || node[nodeChildren].length) && !emptyFolder;
+                        }
 
 						//if node head clicks,
 						treeObject.selectNodeHead = treeObject.selectNodeHead || function( selectedNode ){
