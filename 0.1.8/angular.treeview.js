@@ -20,8 +20,7 @@
 	node-children: each node's children
  	node-filter: free text to search in tree nodes
  	node-isfolder: mark node as folder (make it not selectable)
- 	data-hide-disabled-nodes: true by default, if false - disabled
- 	(disabled: true | disabled == 'disabled') nodes will be shown grayed and non selectable
+ 	data-show-disabled-nodes: false by default, if true - nodes will be displayed in red
 
 	<div
 		data-angular-treeview="true"
@@ -32,7 +31,7 @@
 		data-node-children="children"
  		data-node-filter="freeTextSearch"
  		data-node-isfolder="isfolder"
- 		data-hide-disabled-nodes="boolean"
+ 		data-show-disabled-nodes="boolean"
     >
 	</div>
 */
@@ -69,20 +68,25 @@
 				//isfolder
 				var isFolder = attrs.nodeIsfolder || 'isfolder';
 
-				//filter
+				//isfolder
+				var showDisabledNodes = !!attrs.showDisabledNodes;
 
+				//filter
 				var nodeFilter =attrs.nodeFilter || '';
 				var filter = nodeFilter!=='' ? ' | filter:searchTree(this)' : '';
+				if (showDisabledNodes && nodeFilter!=='') {
+				    filter = ' | filter: ' + nodeFilter;
+				}
 				var highlight_filter = nodeFilter!=='' ? ' | nodehighlight: ' + nodeFilter : '';
 				//tree template
 				var template =
 					'<ul>' +
-						'<li ng-hide="node.disabled" data-ng-repeat="node in ' + treeModel + filter + '">' +
+						'<li ng-hide="node.disabled && '+ !showDisabledNodes + '" data-ng-repeat="node in ' + treeModel + filter + '">' +
 							'<a href="" class="nodewrap" ng-class="{activenode: node.'+ nodeId + ' == ' + treeIdPrefix + 'currentNode.' + nodeId +' && !!node.'+ nodeId + ', disablednode: node.disabled}"><i class="collapsed" data-ng-show="' + treeIdPrefix + 'shouldRenderAsFolder(node) && node.collapsed" data-ng-click="' + treeIdPrefix + 'selectNodeHead(node)"></i>' +
 							'<i class="expanded" data-ng-show="' + treeIdPrefix + 'shouldRenderAsFolder(node) && !node.collapsed" data-ng-click="' + treeIdPrefix + 'selectNodeHead(node)"></i>' +
 							'<i class="normal" data-ng-hide="' + treeIdPrefix + 'shouldRenderAsFolder(node)"></i> ' +
 							'<span class="node_title" data-ng-click="' + treeIdPrefix + 'selectNodeLabel(node)" ng-bind-html="node.' + nodeLabel + highlight_filter+'"></span></a>' +
-							'<div ng-if="!node.collapsed" data-ng-hide="node.collapsed" ' + (treeId ? 'data-tree-id="' + treeId + '"' : '') + ' data-tree-model="node.' + nodeChildren + '" data-node-id=' + nodeId + ' data-node-label=' + nodeLabel + ' data-node-children=' + nodeChildren + ' data-node-filter="'+ nodeFilter +'"></div>' +
+							'<div ng-if="!node.collapsed" data-ng-hide="node.collapsed" ' + (treeId ? 'data-tree-id="' + treeId + '"' : '') + ' data-tree-model="node.' + nodeChildren + '" data-node-id=' + nodeId + ' data-node-label=' + nodeLabel + ' data-node-children=' + nodeChildren + ' data-node-filter="'+ nodeFilter +'" data-show-disabled-nodes="'+showDisabledNodes+'"></div>' +
 						'</li>' +
 					'</ul>';
 
@@ -104,6 +108,10 @@
                             var nodeChildrenLength = node[nodeChildren] ? node[nodeChildren].length : 0;
                             var emptyFolder = true;
 
+                            if (showDisabledNodes && (node[isFolder] || nodeChildrenLength)) {
+                                return true;
+                            }
+
                             for (i = 0; i < nodeChildrenLength; i++) {
                                 if (!node[nodeChildren][i].disabled) {
                                     emptyFolder = false;
@@ -116,18 +124,18 @@
 
 						//if node head clicks,
 						treeObject.selectNodeHead = treeObject.selectNodeHead || function( selectedNode ){
-						    if (selectedNode.disabled ) {
-						        return;
-						    }
+// 						    if (selectedNode.disabled ) {
+// 						        return;
+// 						    }
 							//Collapse or Expand
 							selectedNode.collapsed = !selectedNode.collapsed;
 						};
 
 						//if node label clicks,
 						treeObject.selectNodeLabel = treeObject.selectNodeLabel || function( selectedNode ){
-                            if (selectedNode.disabled ) {
-						        return;
-						    }
+//                             if (selectedNode.disabled ) {
+// 						        return;
+// 						    }
 
 							if (selectedNode[isFolder]) {
 								return treeObject.selectNodeHead(selectedNode);
