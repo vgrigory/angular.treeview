@@ -85,7 +85,7 @@
 							'<a href="" class="nodewrap" ng-class="{activenode: node.'+ nodeId + ' == ' + treeIdPrefix + 'currentNode.' + nodeId +' && !!node.'+ nodeId + ', disablednode: node.disabled}"><i class="collapsed" data-ng-show="' + treeIdPrefix + 'shouldRenderAsFolder(node) && node.collapsed" data-ng-click="' + treeIdPrefix + 'selectNodeHead(node)"></i>' +
 							'<i class="expanded" data-ng-show="' + treeIdPrefix + 'shouldRenderAsFolder(node) && !node.collapsed" data-ng-click="' + treeIdPrefix + 'selectNodeHead(node)"></i>' +
 							'<i class="normal" data-ng-hide="' + treeIdPrefix + 'shouldRenderAsFolder(node)"></i> ' +
-							'<span class="node_title" data-ng-click="' + treeIdPrefix + 'selectNodeLabel(node)" ng-bind-html="node.' + nodeLabel + highlight_filter+'"></span></a>' +
+							'<span class="node_title" ng_class="{\'node_title\': true, \'saved_node\': node.selected}" data-ng-click="' + treeIdPrefix + 'selectNodeLabel(node)" ng-bind-html="node.' + nodeLabel + highlight_filter+'"></span></a>' +
 							'<div ng-if="!node.collapsed" data-ng-hide="node.collapsed" ' + (treeId ? 'data-tree-id="' + treeId + '"' : '') + ' data-tree-model="node.' + nodeChildren + '" data-node-id=' + nodeId + ' data-node-label=' + nodeLabel + ' data-node-children=' + nodeChildren + ' data-node-filter="'+ nodeFilter +'" data-show-disabled-nodes="'+showDisabledNodes+'"></div>' +
 						'</li>' +
 					'</ul>';
@@ -165,7 +165,6 @@
 					//Rendering template.
 					element.html('').append( $compile( template )( scope ) );
 				}
-
 
 				function expandAll(items, collapse){
 					for (var i=0; i<items.length; i++) {
@@ -270,13 +269,13 @@
 			}
 		};
 	}])
-		.filter('nodehighlight', function () {
-			return function (text, search) {
-				if (search && text) {
-					text = text.toString().replace(new RegExp(search.toString(), 'gi'), '<span class="node_highlight">$&</span>');
-					return text;
-				}
-				return text;
-			};
-		});
+    .filter('nodehighlight', function () {
+        return function (text, search) {
+            if (search && text) {
+                text = text.toString().replace(new RegExp(search.toString(), 'gi'), '<span class="node_highlight">$&</span>');
+                return text;
+            }
+            return text;
+        };
+    });
 })( angular );
